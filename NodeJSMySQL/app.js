@@ -113,6 +113,85 @@ app.post('/update', (req, res, err) => {
     }
 });
 
+//delete
+app.post('/delete', (req, res, err) => {
+    if(req.body.userId !== null){
+        console.log(req.body);
+        let thisid = req.body.userId;
+        let deletQuery = "DELETE FROM userdata WHERE userid=?";
+        let param = [userid = thisid];
+        
+        conn.query(deletQuery, param, (err, row, feilds) => {
+            if(!err){
+                console.log(thisid + ":: Data Deleted");
+                res.send("Deleted.");
+            }                
+            else{
+                console.log(err);
+            }
+        });
+    }
+    else{
+        res.send(err);
+    }
+});
+
+//read
+app.post('/login', (req, res, err) => {
+    if(req.body.userId !== null){
+        console.log(req.body);
+        let thisid = req.body.userId;
+        let thispw = req.body.userPw;
+
+        let loginQuery = "SELECT userps FROM userdata WHERE userid=?";
+        let param = [userId = thisid];
+
+        conn.query(loginQuery, param, (err, row, feilds) => {
+            if(!err){
+                console.log("Query Result::: " + JSON.stringify(row[0])); // DB 뒤져 나온 결과 값
+                if(row[0] !== undefined){
+                    if(row[0].userps === thispw && row[0].userps !== undefined){
+                        let TimeStamp = new Date();
+                        console.log(TimeStamp + " :: " + thisid + " :: Login Successfully");
+                        res.send("Login Successfully");
+                    }
+                    else{
+                        let TimeStamp = new Date();
+                        console. log(TimeStamp + " :: " + thisid + " :: Login Failed");
+                        res.send("Login Failed");
+                    }
+                }
+            }                
+            else{
+                console.log(err);
+            }
+        });    
+    }
+    else{
+        res.send(err);
+    }
+});
+
+//read
+app.post('/ranking10', (req, res, err) => {
+    if(req !== null){
+        let rankingQuery = "SELECT userid, score FROM userdata ORDER BY score DESC LIMIT 10";
+        let param = [];
+
+        conn.query(rankingQuery, param, (err, row, feilds) => {
+            if(!err){
+                res.send(row);
+            }
+            else{
+                console.log(err);
+            }
+        });
+    }
+    else{
+        console.log(err);
+    }
+});
+
 app.listen(3000, () => {
     console.log("CRUD server is running");
 });
